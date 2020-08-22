@@ -46,6 +46,30 @@ Unless otherwise noted, the contents of this repository are public domain.
 > There will be no further updates, and no more pull requests will be
 > accepted.
 
+### CC0 Declarations
+
+Under US law it is a bit more difficult to declare something public domain (see [article](https://www.techdirt.com/articles/20150123/15564629797/why-we-still-cant-really-put-anything-public-domain-why-that-needs-to-change.shtml)). Creative Commons offers a [CC0 tool](https://creativecommons.org/choose/zero/) that combined with GPG signed commits, helps with this issue.
+
+The following parties have declared their contributions to this repository as public domain.
+
+<p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
+  <a rel="license"
+     href="http://creativecommons.org/publicdomain/zero/1.0/">
+    <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
+  </a>
+  <br />
+  To the extent possible under law,
+  <a rel="dct:publisher"
+     href="http://www.skotos.net/about/">
+    <span property="dct:title">Skotos Tech Corporation</span></a>
+  has waived all copyright and related or neighboring rights to
+  <span property="dct:title">DGD Kernel Library (aka `kernellib`)</span>.
+This work is published from:
+<span property="vcard:Country" datatype="dct:ISO3166"
+      content="US" about="https://github.com/ChatTheatre/kernellib">
+  United States</span>.
+</p>
+
 <p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
   <a rel="license"
      href="http://creativecommons.org/publicdomain/zero/1.0/">
