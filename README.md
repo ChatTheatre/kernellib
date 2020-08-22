@@ -17,7 +17,7 @@ There were changes in the last few years of `kernellib` to add support for @dwor
 
 DGD was originally created in the early 90s to allow for the creation of very sophisticted text Multi User Dungeons (aka MUDs) on the internet.
 
-In the mid-90s, DGD's architecture proved so powerful that a number of companies used a commercial version of DGD to create some of the first major chat rooms on the internet, most notably iChat which was used for the first [Yahoo! Chatrooms](https://en.wikipedia.org/wiki/Yahoo!_Messenger#Group_conversations_(formerly_Yahoo!_Chat).
+In the mid-90s, DGD's architecture proved so powerful that a number of companies used a commercial version of DGD to create some of the first major chat rooms on the internet, most notably iChat which was used for the first [Yahoo! Chatrooms](https://en.wikipedia.org/wiki/Yahoo!_Messenger#Group_conversations_(formerly_Yahoo!_Chat)).
 
 In February 1999 Skotos Tech Corporation aquired a license to the DGD from Acuity Corporation who had an exclusive license, and began to fork both the DGD driver library and the `kernellib` itself. Some patches were exchanged by both parties over the next decade, but increasingly these versions of DGD driver and `kernellib` diverged.
 
