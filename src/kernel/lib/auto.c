@@ -491,6 +491,19 @@ static object new_object(mixed obj, varargs string uid)
      */
     if (is_new) {
 	/*
+	 * check access
+	 */
+	if ((sscanf(str, "/kernel/%*s") != 0 && !KERNEL()) ||
+	    (creator != "System" &&
+	     !::find_object(ACCESSD)->access(object_name(this_object()), str, READ_ACCESS))) {
+	    /*
+	     * kernel objects can only be cloned by kernel objects, and cloning
+	     * in general requires read access
+	     */
+	    error("Access denied");
+	}
+
+	/*
 	 * check if object can be created
 	 */
 	if (!obj || sscanf(str, "%*s" + LIGHTWEIGHT_SUBDIR) == 0 ||
@@ -545,21 +558,6 @@ static mixed **call_trace()
     }
 
     return trace;
-}
-
-/*
- * NAME:	process_precompiled()
- * DESCRIPTION:	process precompiled objects in a status() return value
- */
-private void process_precompiled(mixed *precompiled)
-{
-    int i;
-
-    if (precompiled) {
-	for (i = sizeof(precompiled); --i >= 0; ) {
-	    precompiled[i] = object_name(precompiled[i]);
-	}
-    }
 }
 
 /*
@@ -620,7 +618,6 @@ static mixed status(varargs mixed obj, mixed index)
 	if (status[ST_STACKDEPTH] >= 0) {
 	    status[ST_STACKDEPTH]++;
 	}
-	process_precompiled(status[ST_PRECOMPILED]);
 	break;
 
     case T_INT:
@@ -628,8 +625,6 @@ static mixed status(varargs mixed obj, mixed index)
 	status = ::status()[obj];
 	if (obj == ST_STACKDEPTH && status >= 0) {
 	    status++;
-	} else if (obj == ST_PRECOMPILED) {
-	    process_precompiled(status);
 	}
 	break;
 
@@ -747,8 +742,8 @@ static void shutdown(varargs int hotboot)
 	error("Permission denied");
     }
     rlimits (-1; -1) {
-	::find_object(DRIVER)->message("System halted.\n");
 	::shutdown(hotboot);
+	::find_object(DRIVER)->message("System halted.\n");
     }
 }
 
@@ -848,7 +843,17 @@ static int call_out(string func, mixed delay, mixed args...)
 	/* direct callouts for kernel objects */
 	return ::call_out(func, delay, args...);
     }
-    return ::call_out("_F_callout", delay, func, 0, args);
+    catch {
+	rlimits (-1; -1) {
+	    type = ::call_out("_F_callout", delay, func, FALSE, args);
+	    if (::find_object(RSRCD)->rsrc_incr(owner, "callouts",
+						this_object(), 1)) {
+		return type;
+	    }
+	    ::remove_call_out(type);
+	    error("Too many callouts");
+	}
+    } : error(::call_trace()[1][TRACE_FIRSTARG][1]);
 }
 
 /*
@@ -863,9 +868,20 @@ static mixed remove_call_out(int handle)
 	if (!next && prev) {
 	    error("No callouts in non-persistent object");
 	}
-	if ((delay=::remove_call_out(handle)) != -1 &&
-	    ::find_object(RSRCD)->remove_callout(nil, this_object(), handle)) {
-	    return 0;
+	rlimits (-1; -1) {
+	    if ((delay = ::remove_call_out(handle)) != -1) {
+		object rsrcd;
+
+		rsrcd = ::find_object(RSRCD);
+
+		if (!sscanf(object_name(this_object()), "/kernel/%*s")) {
+		    rsrcd->rsrc_incr(owner, "callouts", this_object(), -1, TRUE);
+		}
+
+		if (rsrcd->remove_callout(nil, this_object(), handle)) {
+		    return 0;
+		}
+	    }
 	}
 	return delay;
     }
@@ -879,6 +895,9 @@ nomask void _F_callout(string func, int handle, mixed *args)
 {
     if (!previous_program()) {
 	if (handle == 0 && !::find_object(RSRCD)->suspended(this_object())) {
+	    rlimits (-1; -1) {
+		::find_object(RSRCD)->rsrc_incr(owner, "callouts", this_object(), -1, TRUE);
+	    }
 	    _F_call_limited(func, args);
 	} else {
 	    mixed *tls;
@@ -911,6 +930,10 @@ nomask void _F_release(mixed handle)
 
 	callouts = ::status(this_object())[O_CALLOUTS];
 	::remove_call_out(handle);
+	rlimits (-1; -1) {
+	    ::find_object(RSRCD)->rsrc_incr(
+		owner, "callouts", this_object(), -1, TRUE);
+	}
 	for (i = sizeof(callouts); callouts[--i][CO_HANDLE] != handle; ) ;
 	handle = allocate(::find_object(DRIVER)->query_tls_size());
 	_F_call_limited(callouts[i][CO_FIRSTXARG],
@@ -1073,7 +1096,18 @@ static object *query_subscribed_event(string name)
 nomask void _F_start_event(string name, mixed *args)
 {
     if (previous_program() == AUTO) {
-	::call_out("_F_callout", 0, name, FALSE, args);
+	catch {
+	    rlimits (-1; -1) {
+		int handle;
+
+		handle = ::call_out("_F_callout", 0, name, FALSE, args);
+		if (!::find_object(RSRCD)->rsrc_incr(owner, "callouts",
+						     this_object(), 1)) {
+		    ::remove_call_out(handle);
+		    error("Too many callouts");
+		}
+	    }
+	} : error(::call_trace()[1][TRACE_FIRSTARG][1]);
     }
 }
 
@@ -1274,7 +1308,9 @@ static int rename_file(string from, string to)
 
     fcreator = driver->creator(from);
     tcreator = driver->creator(to);
-    size = driver->file_size(from, TRUE);
+    if (fcreator != tcreator) {
+	size = driver->file_size(from, TRUE);
+    }
     rsrcd = ::find_object(RSRCD);
     rsrc = rsrcd->rsrc_get(tcreator, "filequota");
     if (size != 0 && fcreator != tcreator && creator != "System" &&

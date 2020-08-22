@@ -186,6 +186,29 @@ void save()
 }
 
 /*
+ * NAME:	restore()
+ * DESCRIPTION:	force a restore of this object, even in a persistent system
+ */
+void restore()
+{
+    if (SYSTEM()) {
+	restore_object(ACCESSDATA);
+    }
+}
+
+/*
+ * NAME:	reset()
+ * DESCRIPTION: reset this object
+ */
+void reset()
+{
+    if (SYSTEM()) {
+	uaccess = ([ ]);
+	gaccess = ([ ]);
+    }
+}
+
+/*
  * NAME:	set_access()
  * DESCRIPTION:	set access
  */

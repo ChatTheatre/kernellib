@@ -25,9 +25,10 @@ static void create(int clone)
  * NAME:	open()
  * DESCRIPTION:	open the connection
  */
-static void open()
+static int open()
 {
     ::open(allocate(driver->query_tls_size()));
+    return TRUE;
 }
 
 /*
@@ -163,12 +164,12 @@ static void message_done()
 }
 
 /*
- * NAME:	open_datagram()
- * DESCRIPTION:	open a datagram channel for this connection
+ * NAME:	datagram_attach()
+ * DESCRIPTION:	attach a datagram channel to this connection
  */
-static void open_datagram()
+static void datagram_attach()
 {
-    ::open_datagram(allocate(driver->query_tls_size()));
+    ::datagram_attach(allocate(driver->query_tls_size()));
 }
 
 /*

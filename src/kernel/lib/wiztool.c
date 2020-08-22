@@ -524,12 +524,12 @@ static void swapout()
  * NAME:	dump_state()
  * DESCRIPTION:	create a state dump
  */
-static void dump_state()
+static void dump_state(varargs int increment)
 {
     if (!access(owner, "/", FULL_ACCESS)) {
 	message("Permission denied.\n");
     } else {
-	::dump_state();
+	::dump_state(increment);
     }
 }
 
@@ -1891,14 +1891,7 @@ static void cmd_people(object user, string cmd, string str)
  */
 private string swapnum(int num, int div)
 {
-    string str;
-
-    str = (string) ((float) num / (float) div);
-    str += (sscanf(str, "%*s.") != 0) ? "00" : ".00";
-    if (strlen(str) > 4) {
-	str = (str[3] == '.') ? str[.. 2] : str[.. 3];
-    }
-    return str;
+    return (string)(num / div);
 }
 
 /*
@@ -1939,6 +1932,27 @@ private string percentage(mixed part, mixed total)
 }
 
 /*
+ * NAME:	sector_size()
+ * DESCRIPTION:	show a sector size
+ */
+private string sector_size(int amt)
+{
+    int k;
+    int b;
+    int t;
+
+    k = amt / 1024;
+    b = amt % 1024;
+    t = (b * 10) / 1024;
+
+    if (t) {
+	return k + "." + t + "KiB";
+    } else {
+	return k + "KiB";
+    }
+}
+
+/*
  * NAME:	cmd_status()
  * DESCRIPTION:	show driver status
  */
@@ -1960,8 +1974,8 @@ static void cmd_status(object user, string cmd, string str)
 	       ntoa(status[ST_SWAPSIZE]) + " " +
   percentage(status[ST_SWAPUSED], status(ST_SWAPSIZE)) +
   "    Start time:   " + ctime(status[ST_STARTTIME])[4 ..] + "\n" +
-"sector size:   " + (((float) status[ST_SECTORSIZE] / 1024.0) + "K" +
-		     SPACE16)[..15];
+"sector size:   " + (sector_size(status[ST_SECTORSIZE]) +
+		     SPACE16)[.. 15];
 	if ((int) status[ST_STARTTIME] != (int) status[ST_BOOTTIME]) {
 	    str += "           Last reboot:  " +
 		   ctime(status[ST_BOOTTIME])[4 ..];

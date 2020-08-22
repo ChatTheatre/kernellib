@@ -63,7 +63,7 @@ private void decay_rsrc(mixed *rsrc, mixed *grsrc, int time)
     t = rsrc[RSRC_DECAYTIME];
 
     do {
-	usage *= decay;
+	usage = floor(usage * decay);
 	if (usage < 0.5) {
 	    t = time + period;
 	    break;
@@ -72,7 +72,7 @@ private void decay_rsrc(mixed *rsrc, mixed *grsrc, int time)
     } while (time >= t);
 
     rsrc[RSRC_DECAYTIME] = t;
-    rsrc[RSRC_USAGE] = floor(usage + 0.5);
+    rsrc[RSRC_USAGE] = usage;
 }
 
 /*
@@ -192,16 +192,18 @@ int rsrc_incr(string name, mixed index, int incr, mixed *grsrc, int force)
 		}
 
 		rlimits (-1; -1) {
-		    if (index) {
+		    if (index != nil) {
 			/*
 			 * indexed resource
 			 */
 			catch {
 			    if (typeof(index) == T_OBJECT) {
 				/* let object keep track */
+				if (sscanf(object_name(index), "%*s#-1")) {
+				    error("Cannot use non-persistent object for resource index");
+				}
 				index->_F_rsrc_incr(name, incr);
-			    } else if (typeof(rsrc[RSRC_INDEXED]) != T_MAPPING)
-			    {
+			    } else if (typeof(rsrc[RSRC_INDEXED]) != T_MAPPING) {
 				rsrc[RSRC_INDEXED] = ([ index : incr ]);
 			    } else if (!rsrc[RSRC_INDEXED][index]) {
 				rsrc[RSRC_INDEXED][index] = incr;
@@ -318,5 +320,20 @@ void reboot(int downtime)
 		rsrc[RSRC_DECAYTIME] += downtime;
 	    }
 	}
+    }
+}
+
+/*
+ * NAME:	patch()
+ * DESCRIPTION:	Restore system resources that have been removed.
+ */
+void patch()
+{
+    if (previous_object() == rsrcd) {
+	resources = ([
+	  "stack" :	  ({   0, -1, 0 }),
+	  "ticks" :	  ({   0, -1, 0 }),
+	  "tick usage" :  ({ 0.0, -1, 0 })
+	]) + resources;
     }
 }

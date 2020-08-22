@@ -1,5 +1,6 @@
 # include <kernel/kernel.h>
 # include <kernel/user.h>
+# include <status.h>
 
 private object userd;		/* user daemon */
 private int port;		/* port # */
@@ -69,7 +70,11 @@ static void open(mixed *tls)
     banner = call_other(userd, "query_" + conntype + "_banner", port,
 			this_object());
     if (banner) {
-	send_message(banner);
+	if (conntype == "datagram") {
+	    send_datagram(banner);
+	} else {
+	    send_message(banner);
+	}
     }
 
     timeout = call_other(userd, "query_" + conntype + "_timeout", port,
@@ -91,10 +96,18 @@ static void open(mixed *tls)
  */
 static void close(mixed *tls, int dest)
 {
+    int stack;
+    int ticks;
+
+    stack = status(ST_STACKDEPTH);
+    ticks = status(ST_TICKS);
+
     rlimits (-1; -1) {
 	if (user) {
 	    catch {
-		user->logout(dest);
+		rlimits (stack; ticks) {
+		    user->logout(dest);
+		}
 	    }
 	}
 	if (!dest) {
@@ -272,13 +285,13 @@ void datagram_challenge(string str)
 }
 
 /*
- * NAME:	open_datagram()
- * DESCRIPTION:	open a datagram channel for this connection
+ * NAME:	datagram_attach()
+ * DESCRIPTION:	attach a datagram channel to this connection
  */
-static void open_datagram(mixed *tls)
+static void datagram_attach(mixed *tls)
 {
     if (user) {
-	user->open_datagram();
+	user->datagram_attach();
     }
 }
 

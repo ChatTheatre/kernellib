@@ -29,6 +29,7 @@ static void create()
 {
     /* initial resources */
     resources = ([
+      "callouts" :	({ -1,  0,    0 }),
       "objects" :	({ -1,  0,    0 }),
       "events" :	({ -1,  0,    0 }),
       "stack" :		({ -1,  0,    0 }),
@@ -136,6 +137,25 @@ void set_rsrc(string name, int max, int decay, int period)
 	    }
 	} else {
 	    /* new resource */
+	    switch(name) {
+	    case "callouts":
+	    case "objects":
+	    case "events":
+	    case "stack":
+	    case "ticks":
+	    case "filequota":
+	    case "editors":
+	    case "create stack":
+	    case "create ticks":
+		if (decay != 0) {
+		    error("Invalid decay for predefined resource");
+		}
+		break;
+	    case "tick usage":
+		if (decay == 0) {
+		    error("Invalid decay for predefined resource");
+		}
+	    }
 	    resources[name] = ({ max, decay, period });
 	}
     }
@@ -151,6 +171,20 @@ void remove_rsrc(string name)
     object *objects;
 
     if (previous_program() == API_RSRC && (rsrc=resources[name])) {
+	switch(name) {
+	case "callouts":
+	case "objects":
+	case "events":
+	case "stack":
+	case "ticks":
+	case "filequota":
+	case "editors":
+	case "create stack":
+	case "create ticks":
+	case "tick usage":
+	    error("Cannot remove system resource");
+	}
+
 	objects = map_values(owners);
 	i = sizeof(objects);
 	rlimits (-1; -1) {
@@ -609,6 +643,37 @@ void reboot()
 	objects = map_values(owners);
 	for (i = sizeof(objects); --i >= 0; ) {
 	    objects[i]->reboot(downtime);
+	}
+    }
+}
+
+/*
+ * NAME:	patch()
+ * DESCRIPTION:	Restore system resources that have been removed.
+ */
+void patch()
+{
+    if (SYSTEM()) {
+	int sz;
+	object *rsrc_objs;
+
+	resources = ([
+	  "callouts" :		({ -1,  0,    0 }),
+	  "objects" :		({ -1,  0,    0 }),
+	  "events" :		({ -1,  0,    0 }),
+	  "stack" :		({ -1,  0,    0 }),
+	  "ticks" :		({ -1,  0,    0 }),
+	  "tick usage" :	({ -1, 10, 3600 }),
+	  "filequota" :		({ -1,  0,    0 }),
+	  "editors" :		({ -1,  0,    0 }),
+	  "create stack" :	({ -1,  0,    0 }),
+	  "create ticks" :	({ -1,  0,    0 }),
+	]) + resources;
+
+	rsrc_objs = map_values(owners);
+
+	for (sz = sizeof(rsrc_objs) - 1; sz >= 0; --sz) {
+	    rsrc_objs[sz]->patch();
 	}
     }
 }
