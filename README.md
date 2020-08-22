@@ -50,7 +50,7 @@ Unless otherwise noted, the contents of this repository are public domain.
 
 Under US law it is a bit more difficult to declare something public domain (see [article](https://www.techdirt.com/articles/20150123/15564629797/why-we-still-cant-really-put-anything-public-domain-why-that-needs-to-change.shtml)). Creative Commons offers a [CC0 tool](https://creativecommons.org/choose/zero/) that combined with GPG signed commits, helps with this issue.
 
-The following parties have declared their contributions to this repository as public domain.
+The following parties have declared their contributions to this repository as public domain:
 
 <p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
   <a rel="license"
