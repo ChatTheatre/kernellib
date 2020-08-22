@@ -68,7 +68,7 @@ This work is published from:
 
 This repository is intended as a "live archive", which means that we don't plan to add functionality to the repository, but we will accept PRs to add documentation, comment code, address bugs or security issues, or address problems using this library with @dworkin's DGD on modern operating systems.
 
-In paricular, we would love to have more general installation instructions, architecture documentation, code commentary, as well as articles about differences between this code and other forks of the `kernellib`.
+In particular, we would love to have more general installation instructions, architecture documentation, code commentary, as well as articles about differences between this code and other forks of the `kernellib`.
 
 We require that before any first PR from a contributor to this repository can be accepted, their commit must be GPG signed, and it must contain a comment that include a similar CC0 disclaimer as above, which can be obtained from [Creative Commons CC0](https://creativecommons.org/choose/zero/).
 
