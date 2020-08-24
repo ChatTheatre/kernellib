@@ -52,6 +52,8 @@ Under US law it is a bit more difficult to declare something public domain (see 
 
 The following parties have declared their contributions to this repository as public domain:
 
+* Skotos Tech Corportation
+
 <p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
   <a rel="license"
      href="http://creativecommons.org/publicdomain/zero/1.0/">
@@ -70,6 +72,8 @@ This work is published from:
   United States</span>.
 </p>
 
+* Dyvers Hands Productions LLC Series 5
+
 <p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
   <a rel="license"
      href="http://creativecommons.org/publicdomain/zero/1.0/">
@@ -87,6 +91,27 @@ This work is published from:
       content="US" about="https://github.com/ChatTheatre/kernellib">
   United States</span>.
 </p>
+
+* Christopher Allen
+
+<p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
+  <a rel="license"
+     href="http://creativecommons.org/publicdomain/zero/1.0/">
+    <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
+  </a>
+  <br />
+  To the extent possible under law,
+  <a rel="dct:publisher"
+     href="https://ChristopherA.info">
+    <span property="dct:title">Christopher Allen</span></a>
+  has waived all copyright and related or neighboring rights to
+  <span property="dct:title">DGD Kernel Library (aka `kernellib`)</span>.
+This work is published from:
+<span property="vcard:Country" datatype="dct:ISO3166"
+      content="US" about="https://github.com/ChatTheatre/kernellib">
+  United States</span>.
+</p>
+
 
 ## Contributing
 
