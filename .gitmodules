@@ -1,0 +1,3 @@
+[submodule "kernellib-doc"]
+	path = kernellib-doc
+	url = git@github.com:ChatTheatre/kernellib-doc.git
