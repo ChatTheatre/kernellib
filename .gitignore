@@ -97,3 +97,5 @@ src/include/limits.h
 src/include/status.h
 src/include/trace.h
 src/include/type.h
+
+### eOS repo specific excludes ###
